@@ -31,34 +31,6 @@ void stackToWord(Stack *s, char *word){
     word[i] = '\0';
 }
 
-/* ---------------- TRIE ---------------- */
-
-typedef struct TrieNode{
-    struct TrieNode *child[26];
-    int end;
-}TrieNode;
-
-TrieNode* createTrieNode(){
-    TrieNode *node = (TrieNode*)malloc(sizeof(TrieNode));
-    node->end = 0;
-    for(int i=0;i<26;i++) node->child[i] = NULL;
-    return node;
-}
-
-void insertTrie(TrieNode *root, char *word){
-    TrieNode *cur = root;
-    for(int i=0; word[i]; i++){
-        int idx = word[i]-'a';
-        if(idx<0 || idx>=26) return;
-
-        if(cur->child[idx]==NULL)
-            cur->child[idx] = createTrieNode();
-
-        cur = cur->child[idx];
-    }
-    cur->end = 1;
-}
-
 /* ---------------- HASH + LINKED LIST ---------------- */
 
 typedef struct Node{
@@ -118,7 +90,7 @@ void normalize(char *input, char *output){
 
 /* ---------------- PROCESS LINE ---------------- */
 
-void processLine(char *line, Node *table[], TrieNode *trie){
+void processLine(char *line, Node *table[]){
 
     Stack s;
     initStack(&s);
@@ -135,7 +107,6 @@ void processLine(char *line, Node *table[], TrieNode *trie){
 
                 stackToWord(&s, word);
 
-                insertTrie(trie, word);
                 insertHash(table, word);
 
                 clearStack(&s);
@@ -212,16 +183,13 @@ void compareFiles(char *file1, char *file2){
         Node *t1[TABLE_SIZE]={NULL};
         Node *t2[TABLE_SIZE]={NULL};
 
-        TrieNode *trie1 = createTrieNode();
-        TrieNode *trie2 = createTrieNode();
-
         char norm1[MAX_LINE], norm2[MAX_LINE];
 
         normalize(line1, norm1);
         normalize(line2, norm2);
 
-        processLine(norm1, t1, trie1);
-        processLine(norm2, t2, trie2);
+        processLine(norm1, t1);
+        processLine(norm2, t2);
 
         float sim = jaccard(t1,t2);
 
