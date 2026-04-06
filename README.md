@@ -56,4 +56,11 @@ J(A,B) = |A ∩ B| / |A ∪ B|
 Open terminal in your project folder and run:
 
 ```bash
-gcc main.c -o plagiarism
+gcc *.c -o detector
+```
+
+## How to Run
+
+```bash
+./detector <base_file> <file1> <file2> ...
+```
